@@ -2,6 +2,10 @@
 
 Prints git information for the current pane (if $cwd is a git repo)
 
+## Dependencies
+
+[diffstat](https://invisible-island.net/diffstat)
+
 ## Installation
 ### [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm) (recommended)
 

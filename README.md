@@ -2,6 +2,8 @@
 
 Prints git information for the current pane (if $cwd is a git repo)
 
+![img](https://github.com/jrudess/tmux-fancy-git/blob/master/screenshot.png)
+
 ## Dependencies
 
 [diffstat](https://invisible-island.net/diffstat)

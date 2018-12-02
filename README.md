@@ -6,18 +6,18 @@ Prints git information for the current pane (if $cwd is a git repo)
 
 #### Legend
 
-↑ Ahead
-↓ Behind
-● Staged
-+ Index Added
-- Index Deleted
-✖ Conflicts
-+ Unstaged
-- Tree deleted
-… Untracked
-⚑ Stashes
-! Local branches
-? Unknown
+- ↑ Ahead
+- ↓ Behind
+- ● Staged
+- + Index Added
+- - Index Deleted
+- ✖ Conflicts
+- + Unstaged
+- - Tree deleted
+- … Untracked
+- ⚑ Stashes
+- ! Local branches
+- ? Unknown
 
 ## Dependencies
 

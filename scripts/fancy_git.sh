@@ -13,7 +13,7 @@ DIFF=""
 AHEAD=""
 BEHIND=""
 STASHES=""
-PORCELAIN_INFO="?"
+PORCELAIN="?"
 LOCAL_BRANCHES=""
 
 check_error() {
@@ -31,10 +31,9 @@ git_bg_fetch() {
         local repo=$(git rev-parse --show-toplevel 2> /dev/null)
         local fetch_head="$repo/.git/FETCH_HEAD"
 
+        # Don't start a new fetch if already fetching
         if [[ -e "$fetch_head" ]]; then
-            local old_head
-
-            old_head=$(find "$fetch_head" 2> /dev/null)
+            local old_head=$(find "$fetch_head" 2> /dev/null)
 
             if [[ -n "$old_head" ]]; then
                 git fetch --quiet &> /dev/null
@@ -43,7 +42,7 @@ git_bg_fetch() {
     fi
 }
 
-git_diff() {
+git_diffstat() {
     if [[ -n $NAME ]]; then
         local diff=$(git diff | diffstat -f0 -mv | sed -n '1!p')
 
@@ -64,17 +63,14 @@ git_diff() {
 }
 
 git_fetch() {
-    local info
-    local error
-
-    # info=$(timeout "$TIMEOUT2" git status --untracked-files=normal --porcelain)
-    info=$(git status --untracked-files=normal --porcelain)
+    local info=$(git status --untracked-files=normal --porcelain)
 
     error=$(check_error "$?" "1")
 
-    PORCELAIN_INFO="$info"
+    PORCELAIN="$info"
 
     if [ "$error" == "" ]; then
+        # TODO AHEAD/BEHIND not working
          AHEAD=$(grep 'ahead'  <<< "$info" | sed -E  's/.*ahead[[:space:]]+([0-9]+).*/\1/g')
         BEHIND=$(grep 'behind' <<< "$info" | sed -E 's/.*behind[[:space:]]+([0-9]+).*/\1/g')
         error=$(check_error "$?" "2")
@@ -83,7 +79,7 @@ git_fetch() {
             STASHES=$(git stash list | wc -l)
             LOCAL_BRANCHES=$(git branch -vv | cut -c 3- | awk '$3 !~/\[origin/ { print $1 }' | wc -l)
             NAME="$(git rev-parse --abbrev-ref HEAD)"
-            DIFF="$(git_diff)"
+            DIFF="$(git_diffstat)"
         fi
     fi
 
@@ -91,7 +87,7 @@ git_fetch() {
 }
 
 git_print() {
-    local src_ctrl=""
+    local src_ctrl="$DIFF "
     local staged=""
     local tree_deleted=""
     local index_deleted=""
@@ -100,7 +96,7 @@ git_print() {
     local conflicts=""
 
     if [ "$error" == "" ]; then
-        if [ "$PORCELAIN_INFO" != "?" ]; then
+        if [ "$PORCELAIN" != "?" ]; then
             local staged=0
             local index_added=0
             local index_deleted=0
@@ -111,7 +107,7 @@ git_print() {
             local unknown=0
 
             local IFS=$'\n'
-            for line in $PORCELAIN_INFO; do
+            for line in $PORCELAIN; do
                 if   [[ $line =~ ^##          ]]; then true
                 elif [[ $line =~ ^[MRC][\ MD] ]]; then ((staged        ++))
                 elif [[ $line =~ ^A[\ MD]     ]]; then ((index_added   ++))
@@ -143,9 +139,7 @@ git_print() {
             fi
         }
 
-        src_ctrl=$(git_diff)
-        src_ctrl+="  "
-        src_ctrl+=$(build_section ""         ""  "$NAME"      )
+        src_ctrl+=$(build_section ""         "" " $NAME"         )
         src_ctrl+=" ["
         src_ctrl+=$(build_section "$white"   '↑' "$AHEAD"         )
         src_ctrl+=$(build_section "$white"   '↓' "$BEHIND"        )

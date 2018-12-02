@@ -4,6 +4,21 @@ Prints git information for the current pane (if $cwd is a git repo)
 
 ![img](https://github.com/jrudess/tmux-fancy-git/blob/master/screenshot.png)
 
+#### Legend
+
+↑ Ahead
+↓ Behind
+● Staged
++ Index Added
+- Index Deleted
+✖ Conflicts
++ Unstaged
+- Tree deleted
+… Untracked
+⚑ Stashes
+! Local branches
+? Unknown
+
 ## Dependencies
 
 [diffstat](https://invisible-island.net/diffstat)

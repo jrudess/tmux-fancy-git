@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PANE_PATH=$(tmux display-message -p -F "#{pane_current_path}" -t0)
+PANE_PATH=$(tmux display-message -p -F "#{pane_current_path}")
 cd $PANE_PATH
 
 # Navigate out of the .git/ area to avoid some kinds of git errors
@@ -25,7 +25,6 @@ check_error() {
     fi
 }
 
-# TODO: Fetching is useless while ahead/behind not yet working
 git_bg_fetch() {
     if [[ -n $(git remote show) ]]; then
         local repo=$(git rev-parse --show-toplevel 2> /dev/null)
@@ -44,7 +43,7 @@ git_bg_fetch() {
 
 git_diffstat() {
     if [[ -n $NAME ]]; then
-        local diff=$(git diff | diffstat -f0 -mv | sed -n '1!p')
+        local diff=$(git diff | diffstat -f0 -mvs)
 
         error=$(check_error "$?" "3")
 
@@ -70,7 +69,6 @@ git_fetch() {
     PORCELAIN="$info"
 
     if [ "$error" == "" ]; then
-        # TODO AHEAD/BEHIND not working
          AHEAD=$(grep 'ahead'  <<< "$info" | sed -E  's/.*ahead[[:space:]]+([0-9]+).*/\1/g')
         BEHIND=$(grep 'behind' <<< "$info" | sed -E 's/.*behind[[:space:]]+([0-9]+).*/\1/g')
         error=$(check_error "$?" "2")
